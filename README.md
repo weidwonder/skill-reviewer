@@ -1,6 +1,6 @@
 # skill-reviewer
 
-一个用来审查其他 Agent Skill 质量的 Claude Code 技能。以「使用该 skill 的 Agent」视角通读被审技能，输出 P0/P1/P2 分级问题报告与修改建议。
+一个用来审查其他 Agent Skill 质量的技能（Agent Skill）。以「使用该 skill 的 Agent」视角通读被审技能，输出 P0/P1/P2 分级问题报告与修改建议。
 
 > 非目标：本技能不负责从零创建或重构 skill（那是 skill-creator / darwin-skill 之类构建技能的职责），只做审查与反馈。
 
@@ -27,11 +27,13 @@ git clone <本仓库> ~/projects/skills/skill-reviewer
 ln -s ~/projects/skills/skill-reviewer/skill ~/.claude/skills/skill-reviewer
 ```
 
-方式二：使用 `dist/` 下的 `.skill` 打包文件（zip 格式），解压到 `~/.claude/skills/skill-reviewer/`。
+方式二：使用 `dist/` 下的 `.skill` 打包文件（zip 格式），解压到对应 runtime 的 skills 目录下的 `skill-reviewer/`。
+
+> 上面的 `~/.claude/skills/` 是 Claude Code 的目录约定，仅作示例；其他支持 Agent Skills 的 runtime 请替换为其对应的 skills 目录。
 
 ## 使用
 
-对 Claude Code 直接说：
+对支持 Agent Skills 的 Agent 直接说：
 
 - 「帮我 review 一下 ~/projects/skills/foo」
 - 「审查这个 skill 的质量」
