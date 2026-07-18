@@ -1,74 +1,76 @@
 # skill-reviewer
 
-一个用来审查其他 Agent Skill 质量的技能（Agent Skill）。以「使用该 skill 的 Agent」视角通读被审技能，输出 P0/P1/P2 分级问题报告与修改建议。
+*[中文文档](./README_zh.md)*
 
-> 非目标：本技能不负责从零创建或重构 skill（那是 skill-creator / darwin-skill 之类构建技能的职责），只做审查与反馈。
+An Agent Skill that reviews the quality of other Agent Skills. It's the quality gate every skill wishes it had before shipping: it reads the target skill exactly the way the agent that will actually use it does, and turns "feels off" into a graded, actionable P0/P1/P2 report — so broken triggers, dangling references, and silent logic gaps get caught before they cost you a bad run in production.
 
-## 特性
+> Non-goal: this skill does not create or rewrite skills from scratch (that's the job of skill-creator / darwin-skill and similar authoring tools) — it only reviews and gives feedback.
 
-- **23 项审查清单**，分三层：
-  - **机械层校验（1.1–1.4）**：frontmatter 合规（字段白名单、name 规则）、description 触发质量（含关键词堆砌阈值、排除子句）、Markdown 结构完整性、安全扫描（破坏性命令、硬编码凭证、allowed-tools 过度授权）
-  - **通用检查（2.1–2.16）**：工程信息泄露、流程与工具完备性（含决策判据/完成判据与脚本样例实跑比对）、前后文冲突、git 版本管理与资产迁移、冗余与体积阈值、孤立文档与引用深度、违背常识、案例缺失、异常场景说明、正例优先与反例污染、隐式逻辑遗漏、Runtime 中立性、目标/非目标清晰度、reference 读取条件、结构一致性（术语漂移/近似重复/结构断裂）
-  - **依赖与安装检查（3.1–3.4）**：独立安装指导、环境隔离、状态/凭证 JSON 分离（凭证必须 gitignore）、失败驱动安装
-- **使用者视角**：始终假装第一次拿到被审 skill、要完全依靠它完成任务
-- **分级报告**：每条问题落到「位置（文件:行）+ 问题 + 建议」，附通过项、不适用项与可选的 8 维成熟度评分卡
-- **用户判决机制**：孤立文档、疑似违背机制、禁区补充、反例收窄等问题先暂存，审查完统一向用户提问，不打断式逐条问
-- **大技能拆分审查**：文件数 > 20 时按分支并行派发子代理，全局检查项（跨文件冲突、孤立文档、版本管理、结构一致性）保留在主会话
-- **两个可选深度模式**（默认不启用，审查完成后询问）：
-  - **增强 Review**：联网对照领域现状，评估过时 / 不一致 / 遗漏 / 过度限制
-  - **实测验证**：触发率正负样本抽测、RED/GREEN/REFACTOR 行为压力测试、meta 反馈
+## Features
 
-## 安装
+- **23-item review checklist**, in three layers:
+  - **Mechanical checks (1.1–1.4)**: frontmatter compliance (field whitelist, `name` rules), description trigger quality (keyword-stuffing thresholds, exclusion clauses), Markdown structural integrity, security scan (destructive commands, hardcoded credentials, over-privileged `allowed-tools`)
+  - **General checks (2.1–2.16)**: engineering-detail leakage, workflow/tool completeness (including decision/completion criteria and script-example dry-runs), internal contradictions, git version management & asset migration, redundancy & size thresholds, orphaned docs & reference depth, common-sense violations, missing examples, undocumented edge cases, positive-example bias & counter-example pollution, implicit-logic gaps, runtime neutrality, goal/non-goal clarity, reference-loading conditions, structural consistency (terminology drift / near-duplication / structural breaks)
+  - **Dependency & install checks (3.1–3.4)**: standalone install instructions, environment isolation, state/credential JSON separation (credentials must be gitignored), failure-driven install guidance
+- **User's-eye view**: always reviews as if seeing the target skill for the first time and having to rely on it completely to finish a task
+- **Graded report**: every issue is pinned to a location (file:line) + problem + suggested fix, plus a list of passed items, N/A items, and an optional 8-dimension maturity scorecard
+- **User-adjudication gate**: ambiguous findings (orphaned docs, suspected intentional deviations, requests to add hard "never do X" rules, narrowing counter-examples) are queued and presented to the user together at the end, instead of interrupting item by item
+- **Large-skill splitting**: for skills with more than 20 files, review work is fanned out to parallel sub-agents by branch, while cross-file checks (conflicts, orphaned docs, version management, structural consistency) stay in the main session
+- **Two optional deep modes** (off by default, offered after the base review):
+  - **Enhanced review**: cross-checks against current domain practice online, flagging staleness / inconsistency / gaps / over-restriction
+  - **Behavioral testing**: trigger-rate sampling on positive/negative cases, RED/GREEN/REFACTOR behavioral stress tests, meta feedback
 
-方式一：软链（推荐，便于跟随仓库更新）
+## Install
+
+Option 1: symlink (recommended, keeps you in sync with the repo)
 
 ```bash
-git clone <本仓库> ~/projects/skills/skill-reviewer
+git clone <this repo> ~/projects/skills/skill-reviewer
 ln -s ~/projects/skills/skill-reviewer/skill ~/.claude/skills/skill-reviewer
 ```
 
-方式二：使用 `dist/` 下的 `.skill` 打包文件（zip 格式），解压到对应 runtime 的 skills 目录下的 `skill-reviewer/`。
+Option 2: use the packaged `.skill` file under `dist/` (a zip archive) — unzip it into your runtime's skills directory as `skill-reviewer/`.
 
-> 上面的 `~/.claude/skills/` 是 Claude Code 的目录约定，仅作示例；其他支持 Agent Skills 的 runtime 请替换为其对应的 skills 目录。
+> `~/.claude/skills/` above is Claude Code's directory convention, shown only as an example; for any other runtime that supports Agent Skills, substitute its own skills directory.
 
-## 使用
+## Usage
 
-对支持 Agent Skills 的 Agent 直接说：
+Just tell an Agent that supports Agent Skills:
 
-- 「帮我 review 一下 ~/projects/skills/foo」
-- 「审查这个 skill 的质量」
-- 「对这个 SKILL.md 给点反馈意见」
+- "Review ~/projects/skills/foo for me"
+- "Check the quality of this skill"
+- "Give me feedback on this SKILL.md"
 
-流程：确认目标 → 盘点文件与引用图 → 按清单审查 → 输出分级报告并集中询问判决项 →（可选）深度模式。只有在用户要求修改时才会动手改被审 skill。
+Workflow: confirm the target → inventory files and the reference graph → review against the checklist → output a graded report and collect adjudication questions →  (optionally) run a deep mode. It only edits the target skill if the user explicitly asks for changes.
 
-## 目录结构
+## Directory structure
 
 ```
 skill-reviewer/
-├── skill/                          # runtime 技能包（软链目标）
-│   ├── SKILL.md                    # 主工作流
+├── skill/                          # runtime skill package (symlink target)
+│   ├── SKILL.md                    # main workflow
 │   └── references/
-│       ├── review-checklist.md     # 23 项审查清单
-│       ├── report-template.md      # 分级报告模板 + 评分卡
-│       ├── enhanced-review.md      # 增强 Review 模式
-│       └── behavior-testing.md     # 实测验证模式
-├── dist/                           # 打包产物（.skill）
+│       ├── review-checklist.md     # 23-item review checklist
+│       ├── report-template.md      # graded report template + scorecard
+│       ├── enhanced-review.md      # enhanced review mode
+│       └── behavior-testing.md     # behavioral testing mode
+├── dist/                           # packaged build artifacts (.skill)
 └── README.md
 ```
 
-## 版本
+## Version
 
-版本由 git tag 管理，当前 `v0.4.0`。
+Versioning is managed via git tags; current version is `v0.4.0`.
 
-- `v0.1.0` — 初始版本：三层清单、拆分审查、判决机制、增强 Review
-- `v0.2.0` — 用自身对自身做了一轮完整自审（含子代理拆分实战），修复拆分职责对齐等 3 个 P1；新增机械层校验；表述改为工具中立
-- `v0.3.0` — 博采众长：吸收 darwin-skill、obra/superpowers、philschmid、skill-validator、verdict/skillscore 的做法，新增实测验证模式、安全扫描、Runtime 中立性/非目标/读取条件检查、评分卡
-- `v0.4.0` — 逻辑一致性强化：面向"被多个 LLM/Agent 来回修改"的 skill，新增 2.16 结构一致性（术语漂移/近似重复/结构断裂）；2.2 补决策判据与完成判据检查；2.12 隐式逻辑走查放开为对所有 skill 执行（对话约束沉淀仍限构建对话）；评分卡新增"逻辑一致性"维度（8 维）
+- `v0.1.0` — Initial release: three-layer checklist, split review, adjudication gate, enhanced review
+- `v0.2.0` — Ran a full self-review of the skill on itself (including a real sub-agent split run), fixed 3 P1 issues around split-responsibility alignment; added mechanical-layer checks; rewrote wording to be tool-neutral
+- `v0.3.0` — Drew on darwin-skill, obra/superpowers, philschmid, skill-validator, and verdict/skillscore; added behavioral testing mode, security scanning, runtime-neutrality/non-goal/reference-loading-condition checks, scorecard
+- `v0.4.0` — Logical-consistency hardening: for skills repeatedly edited by multiple LLMs/agents, added 2.16 structural consistency (terminology drift / near-duplication / structural breaks); 2.2 now also checks decision and completion criteria; 2.12's implicit-logic walkthrough now runs on all skills (conversational-constraint capture remains limited to authoring conversations); scorecard gained a "logical consistency" dimension (8 total)
 
-## 设计参考
+## Design references
 
-- darwin-skill（本机同门技能）— Review 维度、runtime 卫生、评分卡
-- [obra/superpowers](https://github.com/obra/superpowers) — RED/GREEN/REFACTOR 子代理行为测试法
-- [Testing Claude Skills](https://www.philschmid.de/testing-skills) — 触发率正负样本评测
-- [skill-validator](https://github.com/agent-ecosystem/skill-validator) — 分级 token 阈值、关键词堆砌检测
-- [Anthropic Agent Skills Best Practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices) — 渐进式披露、time-sensitive 信息规避
+- darwin-skill (sibling skill on this machine) — review dimensions, runtime hygiene, scorecard
+- [obra/superpowers](https://github.com/obra/superpowers) — RED/GREEN/REFACTOR sub-agent behavioral testing method
+- [Testing Claude Skills](https://www.philschmid.de/testing-skills) — trigger-rate positive/negative sample evaluation
+- [skill-validator](https://github.com/agent-ecosystem/skill-validator) — graded token thresholds, keyword-stuffing detection
+- [Anthropic Agent Skills Best Practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices) — progressive disclosure, avoiding time-sensitive information
