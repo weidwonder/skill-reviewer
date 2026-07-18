@@ -2,7 +2,7 @@
 
 *[English](./README.md)*
 
-一个用来审查其他 Agent Skill 质量的技能（Agent Skill）。以「使用该 skill 的 Agent」视角通读被审技能，输出 P0/P1/P2 分级问题报告与修改建议。
+一个用来审查其他 Agent Skill 质量的技能（Agent Skill）——每个 skill 上线前都该有、却常常没有的那道质量关卡。它完全站在「真正要用这个 skill 干活的 Agent」视角通读被审技能，把"感觉哪里不对"变成一份可执行的 P0/P1/P2 分级报告，把触发失灵、悬空引用、隐式逻辑漏洞这些坑，挡在它们真正搞砸一次生产运行之前。
 
 > 非目标：本技能不负责从零创建或重构 skill（那是 skill-creator / darwin-skill 之类构建技能的职责），只做审查与反馈。
 
