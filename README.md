@@ -8,14 +8,14 @@ An Agent Skill that reviews the quality of other Agent Skills. It's the quality 
 
 ## Features
 
-- **23-item review checklist**, in three layers:
+- **24-item review checklist**, in three layers:
   - **Mechanical checks (1.1–1.4)**: frontmatter compliance (field whitelist, `name` rules), description trigger quality (keyword-stuffing thresholds, exclusion clauses), Markdown structural integrity, security scan (destructive commands, hardcoded credentials, over-privileged `allowed-tools`)
-  - **General checks (2.1–2.16)**: engineering-detail leakage, workflow/tool completeness (including decision/completion criteria and script-example dry-runs), internal contradictions, git version management & asset migration, redundancy & size thresholds, orphaned docs & reference depth, common-sense violations, missing examples, undocumented edge cases, positive-example bias & counter-example pollution, implicit-logic gaps, runtime neutrality, goal/non-goal clarity, reference-loading conditions, structural consistency (terminology drift / near-duplication / structural breaks)
+  - **General checks (2.1–2.17)**: engineering-detail leakage, workflow/tool completeness (including decision/completion criteria and script-example dry-runs), internal contradictions, git version management & asset migration, redundancy & size thresholds, orphaned docs & reference depth, common-sense violations, missing examples, undocumented edge cases, positive-example bias & counter-example pollution, implicit-logic gaps, runtime neutrality, goal/non-goal clarity, reference-loading conditions, structural consistency (terminology drift / near-duplication / structural breaks), progressive disclosure & attention control (layering, scenario splitting, task decomposition, step-by-step execution, per-step cognitive-load thresholds)
   - **Dependency & install checks (3.1–3.5)**: standalone install instructions, environment isolation, state/credential JSON separation (credentials must be gitignored), failure-driven install guidance, deployment cohesion (bundled CLIs/scripts and deploy docs must live inside the skill root, not beside it)
 - **User's-eye view**: always reviews as if seeing the target skill for the first time and having to rely on it completely to finish a task
 - **Graded report**: every issue is pinned to a location (file:line) + problem + suggested fix, plus a list of passed items, N/A items, and an optional 8-dimension maturity scorecard
 - **User-adjudication gate**: ambiguous findings (orphaned docs, suspected intentional deviations, requests to add hard "never do X" rules, narrowing counter-examples) are queued and presented to the user together at the end, instead of interrupting item by item
-- **Large-skill splitting**: for skills with more than 20 files, review work is fanned out to parallel sub-agents by branch, while cross-file checks (conflicts, orphaned docs, version management, structural consistency) stay in the main session
+- **Large-skill splitting**: for skills with more than 20 files, review work is fanned out to parallel sub-agents by branch, while cross-file checks (conflicts, orphaned docs, version management, structural consistency, progressive disclosure, deployment cohesion) stay in the main session
 - **Two optional deep modes** (off by default, offered after the base review):
   - **Enhanced review**: cross-checks against current domain practice online, flagging staleness / inconsistency / gaps / over-restriction
   - **Behavioral testing**: trigger-rate sampling on positive/negative cases, RED/GREEN/REFACTOR behavioral stress tests, meta feedback
@@ -50,7 +50,7 @@ skill-reviewer/
 ├── skill/                          # runtime skill package (symlink target)
 │   ├── SKILL.md                    # main workflow
 │   └── references/
-│       ├── review-checklist.md     # 23-item review checklist
+│       ├── review-checklist.md     # 24-item review checklist
 │       ├── report-template.md      # graded report template + scorecard
 │       ├── enhanced-review.md      # enhanced review mode
 │       └── behavior-testing.md     # behavioral testing mode
@@ -60,12 +60,14 @@ skill-reviewer/
 
 ## Version
 
-Versioning is managed via git tags; current version is `v0.4.0`.
+Versioning is managed via git tags; current version is `v0.6.0`.
 
 - `v0.1.0` — Initial release: three-layer checklist, split review, adjudication gate, enhanced review
 - `v0.2.0` — Ran a full self-review of the skill on itself (including a real sub-agent split run), fixed 3 P1 issues around split-responsibility alignment; added mechanical-layer checks; rewrote wording to be tool-neutral
 - `v0.3.0` — Drew on darwin-skill, obra/superpowers, philschmid, skill-validator, and verdict/skillscore; added behavioral testing mode, security scanning, runtime-neutrality/non-goal/reference-loading-condition checks, scorecard
 - `v0.4.0` — Logical-consistency hardening: for skills repeatedly edited by multiple LLMs/agents, added 2.16 structural consistency (terminology drift / near-duplication / structural breaks); 2.2 now also checks decision and completion criteria; 2.12's implicit-logic walkthrough now runs on all skills (conversational-constraint capture remains limited to authoring conversations); scorecard gained a "logical consistency" dimension (8 total)
+- `v0.5.1` — Deployment cohesion: added 3.5 (bundled CLIs/scripts and deploy docs must live inside the skill root; sitting beside it is a P0); Step 2 now inventories sibling assets in the parent directory; section 3's execution condition widened to cover skills that bundle their own CLI/scripts
+- `v0.6.0` — Attention engineering: added 2.17 progressive disclosure & attention control (layering, scenario splitting, task decomposition, step-by-step execution, per-step cognitive-load thresholds, disclosure-timing mismatch, context offloading); the scorecard's "reference design" dimension is now "reference design & progressive disclosure"
 
 ## Design references
 
