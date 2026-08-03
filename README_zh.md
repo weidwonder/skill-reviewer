@@ -26,7 +26,7 @@
 
 ```bash
 git clone <本仓库> ~/projects/skills/skill-reviewer
-ln -s ~/projects/skills/skill-reviewer/skill ~/.claude/skills/skill-reviewer
+ln -s ~/projects/skills/skill-reviewer/skill ~/.claude（or codex etc..）/skills/skill-reviewer
 ```
 
 方式二：使用 `dist/` 下的 `.skill` 打包文件（zip 格式），解压到对应 runtime 的 skills 目录下的 `skill-reviewer/`。
@@ -71,7 +71,7 @@ skill-reviewer/
 
 ## 设计参考
 
-- darwin-skill（本机同门技能）— Review 维度、runtime 卫生、评分卡
+- [darwin-skill](https://github.com/alchaincyf/darwin-skill)— Review 维度、runtime 卫生、评分卡
 - [obra/superpowers](https://github.com/obra/superpowers) — RED/GREEN/REFACTOR 子代理行为测试法
 - [Testing Claude Skills](https://www.philschmid.de/testing-skills) — 触发率正负样本评测
 - [skill-validator](https://github.com/agent-ecosystem/skill-validator) — 分级 token 阈值、关键词堆砌检测

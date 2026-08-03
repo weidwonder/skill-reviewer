@@ -26,7 +26,7 @@ Option 1: symlink (recommended, keeps you in sync with the repo)
 
 ```bash
 git clone <this repo> ~/projects/skills/skill-reviewer
-ln -s ~/projects/skills/skill-reviewer/skill ~/.claude/skills/skill-reviewer
+ln -s ~/projects/skills/skill-reviewer/skill ~/.claude（or codex etc..）/skills/skill-reviewer
 ```
 
 Option 2: use the packaged `.skill` file under `dist/` (a zip archive) — unzip it into your runtime's skills directory as `skill-reviewer/`.
@@ -71,7 +71,7 @@ Versioning is managed via git tags; current version is `v0.6.0`.
 
 ## Design references
 
-- darwin-skill (sibling skill on this machine) — review dimensions, runtime hygiene, scorecard
+- [darwin-skill](https://github.com/alchaincyf/darwin-skill) — review dimensions, runtime hygiene, scorecard
 - [obra/superpowers](https://github.com/obra/superpowers) — RED/GREEN/REFACTOR sub-agent behavioral testing method
 - [Testing Claude Skills](https://www.philschmid.de/testing-skills) — trigger-rate positive/negative sample evaluation
 - [skill-validator](https://github.com/agent-ecosystem/skill-validator) — graded token thresholds, keyword-stuffing detection
