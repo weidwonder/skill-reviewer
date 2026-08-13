@@ -60,7 +60,7 @@ skill-reviewer/
 
 ## Version
 
-Versioning is managed via git tags; current version is `v0.6.0`.
+Versioning is managed via git tags; current version is `v0.7.0`.
 
 - `v0.1.0` — Initial release: three-layer checklist, split review, adjudication gate, enhanced review
 - `v0.2.0` — Ran a full self-review of the skill on itself (including a real sub-agent split run), fixed 3 P1 issues around split-responsibility alignment; added mechanical-layer checks; rewrote wording to be tool-neutral
@@ -68,6 +68,7 @@ Versioning is managed via git tags; current version is `v0.6.0`.
 - `v0.4.0` — Logical-consistency hardening: for skills repeatedly edited by multiple LLMs/agents, added 2.16 structural consistency (terminology drift / near-duplication / structural breaks); 2.2 now also checks decision and completion criteria; 2.12's implicit-logic walkthrough now runs on all skills (conversational-constraint capture remains limited to authoring conversations); scorecard gained a "logical consistency" dimension (8 total)
 - `v0.5.1` — Deployment cohesion: added 3.5 (bundled CLIs/scripts and deploy docs must live inside the skill root; sitting beside it is a P0); Step 2 now inventories sibling assets in the parent directory; section 3's execution condition widened to cover skills that bundle their own CLI/scripts
 - `v0.6.0` — Attention engineering: added 2.17 progressive disclosure & attention control (layering, scenario splitting, task decomposition, step-by-step execution, per-step cognitive-load thresholds, disclosure-timing mismatch, context offloading); the scorecard's "reference design" dimension is now "reference design & progressive disclosure"
+- `v0.7.0` — Cross-platform installation: added 3.6 requiring supported-platform coverage, deterministic installation locations, and preference for dedicated dependency directories inside the skill root
 
 ## Design references
 
